@@ -1,0 +1,21 @@
+# nixpacks.toml
+[phases.setup]
+nixPkgs = [
+  "php80.withExtensions (pe: pe.enabled ++ [pe.pdo_mysql pe.mbstring pe.tokenizer pe.xml pe.curl pe.fileinfo])",
+  "nginx",
+  "libmysqlclient",
+  "php80Packages.composer",
+  "nodejs_18"
+]
+
+[phases.build]
+cmds = [
+  "composer install --no-dev --optimize-autoloader",
+  "npm install --production",
+  "php artisan config:cache",
+  "php artisan route:cache",
+  "php artisan view:cache"
+]
+
+[phases.start]
+cmd = "php artisan migrate --force && php-fpm"
